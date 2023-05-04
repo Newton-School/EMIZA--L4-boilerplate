@@ -1,93 +1,107 @@
-const users   = require("../models/user.js");
+const Users   = require("../models/user.js");
 const jwt = require("jsonwebtoken");
-const tasks   = require("../models/task.js");
+const Tasks   = require("../models/task.js");
 const bcrypt  = require('bcrypt');
 const { valid } = require("joi");
 const JWT_SECRET = "newtonSchool";
 
+
 const createTask =async (req, res) => {
 
+    //creator_id is user id who have created this task.
+
     const { heading, description, token  } = req.body;
-    const decodedToken = jwt.verify(token, JWT_SECRET);
+    let decodedToken;
+    try{
+        decodedToken = jwt.verify(token, JWT_SECRET);
+    }catch(err){
+        res.status(404).json({
+            status: 'fail',
+            message: 'Invalid token'
+        });
+    }
     const creator_id = decodedToken.userId;
 
-    var newtask = {
-        "heading":heading,
-        "description":description,
-        "creator_id": creator_id
+    const newtask = {
+        heading,
+        description,
+        creator_id
     };
 
-    tasks.create(newtask).then((task) => {
-
+    try{
+        const task = await Tasks.create(newtask);
         res.status(200).json({
-            "message": 'Task added successfully',
-            "task_id": task._id,
-            "status": 'success'
+            message: 'Task added successfully',
+            task_id: task._id,
+            status: 'success'
         });
-    })
-    .catch((error) => {
+    }catch(error){
         res.status(404).json({
-            "status": 'fail',
-            "message": error.message
+            status: 'fail',
+            message: error.message
         });
-    });
+    };
 
 }
 
 
-const Taskdetail = async (req, res) => {
+const getdetailTask = async (req, res) => {
 
-    const {task_id, token} = req.body;
+    const task_id = req.body.task_id;
 
-    tasks.findById(task_id).then((task) => {
+    try{
+        const task = await Tasks.findById(task_id);
         res.status(200).json({
-            "status": 'success',
-            "data": task
+            status: 'success',
+            data: task
         })
-    }).catch((err)=> {
+    }catch(err){
         res.status(404).json({
-            "status": 'fail',
-            "message": err.message
+            status: 'fail',
+            message: err.message
         })
-    });
+    }
 }
 
-
-Taskupdate = async (req, res) => {
+const updateTask = async (req, res) => {
     
     const task_id = req.body.task_id;
-    
-    const task = await tasks.findByIdAndUpdate(
-        task_id,
-        { $set:  req.body  }
-    );
-    
-    const updatedtask = await tasks.findById(task_id);
-    res.status(200).json({
-        "status":"success",
-        "data": updatedtask
-    })
+    try{
+        const task = await Tasks.findByIdAndUpdate(
+            task_id,
+            { $set:  req.body },
+            { new: true }
+        );
+        res.status(200).json({
+            status:'success',
+            data: task
+        });
+    }catch(err){
+        res.status(404).json({
+            status:'fail',
+            data: err.message
+        });
+    }
 
 }
 
 
-
-Taskdelete = async (req, res) => {
+const deleteTask = async (req, res) => {
 
     const {task_id, token} = req.body;
 
-    tasks.findByIdAndDelete(task_id).then(() => {
+    try{
+        await Tasks.findByIdAndDelete(task_id);
         res.status(200).json({
             status: 'success',
             message: 'Task deleted successfully'
         });
-    })
-    .catch((err) => {
+    }catch(err){
         res.status(404).json({
-            "status": 'fail',
-            "message": err.message
+            status: 'fail',
+            message: err.message
         })
-    });
+    };
 
 }
 
@@ -120,11 +134,10 @@ the latest data will be at the top.
 
 */
 
-alltask = async (req, res) => {
+const getallTask = async (req, res) => {
 
     //Write your code here.
-   
 }
 
 
-module.exports = { createTask, Taskdetail, Taskupdate, Taskdelete, alltask };
+module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask };

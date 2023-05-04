@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 
+
 var taskSchema = mongoose.Schema({
   heading: {
     type: String,
@@ -9,7 +10,7 @@ var taskSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  Status: {
+  status: {
     type: String,
     enum: ['pending', 'done'],
     default: 'pending'
@@ -23,4 +24,4 @@ var taskSchema = mongoose.Schema({
 );
 
 
-module.exports = mongoose.model("Task", taskSchema);;
+module.exports = mongoose.model("Task", taskSchema);

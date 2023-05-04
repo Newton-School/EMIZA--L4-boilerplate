@@ -1,14 +1,14 @@
 const express = require("express");
 
-const { createTask, Taskdetail, Taskupdate, Taskdelete, alltask } = require("../controllers/taskControllers");
-const { isowner } = require("../middleware/taskmiddleware.js");
+const { createTask, getdetailTask, updateTask, deleteTask, getallTask } = require("../controllers/taskControllers");
+const { isowner } = require("../middleware/taskMiddleware.js");
 
 const router = express.Router();
 
-router.get("/", alltask);
+router.get("/", getallTask);
 router.post("/create", createTask);
-router.get("/detail", isowner() , Taskdetail);
-router.post("/delete", isowner() , Taskdelete);
-router.post("/update", isowner() , Taskupdate);
+router.get("/detail", isowner , getdetailTask);
+router.post("/delete", isowner, deleteTask);
+router.post("/update", isowner, updateTask);
 
 module.exports = router;

@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
 
-
 var userSchema = mongoose.Schema({
   name: {
     type: String,
@@ -8,14 +7,7 @@ var userSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    validate: {
-      async validator(value) {
-        const emailexist = await checkEmailExists(User, value);
-        return !emailexist;
-      },
-      message: "Email already exists",
-    },
+    required: true
   },
   password: {
     type: String,
@@ -30,12 +22,4 @@ var userSchema = mongoose.Schema({
 { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-
-
-async function checkEmailExists(User, email) {
-  const count = await User.countDocuments({ email });
-  return count !== 0;
-}
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);
