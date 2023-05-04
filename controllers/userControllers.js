@@ -97,8 +97,6 @@ const signupUser = async (req, res) => {
  
  If there is an error during the JWT verification process or clearing the cookie, the controller should respond with a 500 Internal Server Error status and a JSON object containing a 'message' field with value 'Something went wrong', a 'status' field with value 'fail', and an 'error' field with the error object.
  
- Input:
- Authorization Token, token is present in req.hearders.authorization
  
  Output:
  {
